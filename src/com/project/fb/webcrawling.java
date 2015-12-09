@@ -9,6 +9,7 @@ import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -19,11 +20,13 @@ import org.jsoup.select.Elements;
 
 public class webcrawling {
 	static int size_of_filtersport=0;
+	static HashMap<String,String> finalpost=new HashMap<String,String>();
 	/**
 	 * @param args
+	 * @return 
 	 * @throws MalformedURLException 
 	 */
-	public static void post_display(){
+	public static HashMap<String, String> post_display(){
 		try{
 			File b=new File("/home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/Data/filter_sports.csv");
 			File stopword=new File("/home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/Data/stopwords.csv");
@@ -77,14 +80,18 @@ public class webcrawling {
 						  }
 						  
 					  System.out.println("++++++++++++++++++++++++++++++++");
+					  String av=new String();
 					  for(String s:Keywords){
 						  
 						  if(s.equals("")==false)
-						  System.out.print("#"+s+" ");
-						  
+						//  System.out.print("#"+s+" ");
+						  av+="#"+s+" ";
 					  }
+					 System.out.println(av);
 					  System.out.println();
 					  System.out.println(split[split.length-2]);
+					  finalpost.put(av,split[split.length-2] );
+					  
 				  }
 			  }
 			random.close();
@@ -93,6 +100,7 @@ public class webcrawling {
 			e.printStackTrace();
 			System.out.println("I am in post_diaplay");
 		}
+		return finalpost;
 	}
 	
 	public static void extract_post(){
@@ -135,19 +143,13 @@ public class webcrawling {
 		}
 		
 	}
-	public void webcrawl(String urli) throws MalformedURLException{
-		URL url=new URL(urli);
-		
-	}
-	
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public HashMap<String, String> webcrawl(String url) throws MalformedURLException{
+		finalpost.clear();
 		try{
 			File a=new File("/home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/Data/sports.csv");
 			BufferedWriter writer=new BufferedWriter(new FileWriter(a));
 			
-			Document doc = Jsoup.connect("http://timesofindia.indiatimes.com/sports").get();
+			Document doc = Jsoup.connect(url).get();
 			
 			doc.select("img").remove();
 			
@@ -167,13 +169,17 @@ public class webcrawling {
 			writer.close();
 			
 			extract_post();	
-			post_display();
+			
 			
 			
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("I am Stuck!");
 		}
+		return post_display();
 	}
+	
+	
+	
 
 }

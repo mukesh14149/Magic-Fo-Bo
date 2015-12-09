@@ -2,6 +2,9 @@
     <wb-module deploy-name="News_Fb">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="jsoup-1.8.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/WebContent/WEB-INF/lib/jsoup-1.8.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="News_Fb"/>
         <property name="java-output-path" value="/News_Fb/build/classes"/>
     </wb-module>
