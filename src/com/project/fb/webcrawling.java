@@ -1,3 +1,6 @@
+/*
+ * @author Mukesh Gupta
+ */
 package com.project.fb;
 
 import java.io.BufferedReader;
@@ -28,32 +31,40 @@ public class webcrawling {
 	 */
 	public static HashMap<String, String> post_display(){
 		try{
-			File b=new File("/home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/Data/filter_sports.csv");
-			File stopword=new File("/home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/Data/stopwords.csv");
-
+			
+			System.out.println(System.getProperty("user.dir"));
+			File b=new File("/home/mukesh/Downloads/News_Fb/Data/filter_sports.csv");
+			File stopword=new File("/home/mukesh/Downloads/News_Fb/Data/stopwords.csv");
 			BufferedReader random=new BufferedReader(new FileReader(b));
 			
-			 HashSet<Integer> set=new HashSet<Integer>();  
-			  Random rand=new Random();
-		
-			  while(true){
+			
+			HashSet<Integer> set=new HashSet<Integer>();  //HashSet of Perfect post to Display
+			
+			//There could be a lot of post so we randomaly select 10 post of Selected Category.
+			Random rand=new Random();
+			while(true){
+				//Make a list of randomly selected Index no. which is going to fill in hashset.
 						set.add(rand.nextInt(286));
 						if(set.size()==10)
 							break;
-			  }
+			}
 			  Object[] array=set.toArray();
 			  String line;
 			  int counter=0;
+			  
+			  //Arraylist of Keywords.
+			  
 			  ArrayList<String> Keywords=new ArrayList<String>();
 			  while((line=random.readLine())!=null){
 				  counter++;
 				  Keywords.clear();
+				  //Remove Stopword from source and make them HashTag of a post.
 				  if(array[0].equals(counter)||array[1].equals(counter)||array[2].equals(counter)||array[3].equals(counter)||array[4].equals(counter)||array[5].equals(counter)||array[6].equals(counter)||array[7].equals(counter)||array[8].equals(counter)||array[9].equals(counter)){
 					  String[] split=line.split("=>");
-					  //System.out.println(line);
+					  
 					  String[] hashsplit=split[split.length-1].split("/|\\-");
 					  String[] hashsplit1=split[split.length-2].split(" ");
-					  //System.out.println(hashsplit[1]);
+					 
 					  String str;
 					  int ct=0;
 					  
@@ -79,18 +90,17 @@ public class webcrawling {
 							  sw.close();
 						  }
 						  
-					  System.out.println("++++++++++++++++++++++++++++++++");
+					  
 					  String av=new String();
+					  //Add HashTag to post.
 					  for(String s:Keywords){
 						  
 						  if(s.equals("")==false)
-						//  System.out.print("#"+s+" ");
 						  av+="#"+s+" ";
 					  }
-					 System.out.println(av);
-					  System.out.println();
-					  System.out.println(split[split.length-2]);
-					  finalpost.put(av,split[split.length-2] );
+					  
+					
+					 finalpost.put(av,split[split.length-2] );
 					  
 				  }
 			  }
@@ -98,85 +108,74 @@ public class webcrawling {
 			
 		}catch(Exception e){
 			e.printStackTrace();
-			System.out.println("I am in post_diaplay");
 		}
 		return finalpost;
 	}
 	
 	public static void extract_post(){
 		try{
-			File a=new File("/home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/Data/sports.csv");
-			File b=new File("/home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/Data/filter_sports.csv");
-			File key=new File("/home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/Data/keyword.csv");
+			File a=new File("/home/mukesh/Downloads/News_Fb/Data/sports.csv");			//Pure Source  
+			File b=new File("/home/mukesh/Downloads/News_Fb/Data/filter_sports.csv");	//Filter Source
+			File key=new File("/home/mukesh/Downloads/News_Fb/Data/keyword.csv");		//File to Save HashTag
+			
 			BufferedWriter writer=new BufferedWriter(new FileWriter(b));
 			BufferedWriter writerk=new BufferedWriter(new FileWriter(key));
 			BufferedReader reader=new BufferedReader(new FileReader(a));
 			String line;
+			
+			
 			while((line=reader.readLine())  != null){
 				try{
 				String[] split=line.split("=>");
-				//System.out.println(split.length+split[0]);
 				String[] string=split[0].split(" ");
 				if(string.length>=5){
-					//System.out.println("writing");
 					writer.write(line);
 					writer.newLine();
 					size_of_filtersport++;
 				}
 				else{
-					//System.out.println("writing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 					writerk.write(split[0]);
 					writerk.newLine();
-					
 				}
 				}catch(Exception e){
-					//e.printStackTrace();
-					System.out.println("Stuck in while loop");
 				}
 			}
 			writer.close();
 			writerk.close();
 			reader.close();
 		}catch(Exception e){
-			e.printStackTrace();
-			System.out.println("I am stucking in extract_post");
 		}
 		
 	}
 	public HashMap<String, String> webcrawl(String url) throws MalformedURLException{
 		finalpost.clear();
+		
 		try{
-			File a=new File("/home/mukesh/Documents/Developers_stuff/Java_development/News_Fb/Data/sports.csv");
+			//File that hold source from Selected Media
+			File a=new File("/home/mukesh/Downloads/News_Fb/Data/sports.csv");
 			BufferedWriter writer=new BufferedWriter(new FileWriter(a));
 			
+			//Fetch Source from Given URL.
 			Document doc = Jsoup.connect(url).get();
 			
+			//Remove img tag from Source.
 			doc.select("img").remove();
 			
+			//Select a tag element.
 			Elements anewsHeadlines = doc.select("a");
-			//Elements pnewsHeadlines = doc.select("p");
-			//Elements elements = doc.body().select("*");
-
 			
+			//Write a tag element in a file.
 			for(int i=0;i<doc.select("a").size();i++){
-				
-			//	System.out.println("!!Afte parsing, Heading : " +i+ anewsHeadlines.get(i).text()+"=>"+anewsHeadlines.get(i).attr("href"));
 				writer.write(anewsHeadlines.get(i).text().toString()+"=>"+anewsHeadlines.get(i).attr("href"));
 				writer.newLine();
-				
 			}
-			
 			writer.close();
-			
-			extract_post();	
-			
-			
+			extract_post(); //Method to convert Source of 'a' tag into Post with hashtag	
 			
 		}catch(Exception e){
-			e.printStackTrace();
-			System.out.println("I am Stuck!");
+		
 		}
-		return post_display();
+		return post_display();  //Method to return Post.
 	}
 	
 	
